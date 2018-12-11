@@ -1,2 +1,4 @@
 *.vim
 src/*
+elm-stuff/
+
