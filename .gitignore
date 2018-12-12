@@ -1,4 +1,8 @@
-*.vim
-src/*
+node_modules/
 elm-stuff/
 
+# Netlify builds
+dist/
+.cache
+
+*.vim
