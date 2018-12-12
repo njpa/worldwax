@@ -41,7 +41,7 @@
 @import './_border-style';
 @import './_border-widths';
 @import './_box-shadow';
-@import './_code';
+/*@import './_code';*/
 @import './_coordinates';
 @import './_clears';
 @import './_display';
@@ -66,7 +66,7 @@
 @import './_skins-pseudo';
 @import './_spacing';
 @import './_negative-margins';
-@import './_tables';
+/*@import './_tables';*/
 @import './_text-decoration';
 @import './_text-align';
 @import './_text-transform';
