@@ -1,0 +1,116 @@
+/* 
+* Tachyons supplements
+*/
+
+.bg-liver { background-color: rgb(148, 54, 48); }
+.bg-aqua { background-color: rgb(7, 104, 102); }
+.bg-olive { background-color: rgb(94, 94, 58); }
+.bg-aubergine { background-color: rgb(118, 33, 87); }
+.aubergine { color: rgb(118, 33, 87); }
+.b--aubergine { border-color: rgb(118, 33, 87); }
+.tracked-subtle { letter-spacing: 0.03em; }
+
+.background-clip {background-clip: content-box;}
+
+.maxh6 { max-height: 32rem; }
+.w-15 { width: 15%; }
+.w-5 { width: 5%; }
+.w45 { width: 12rem; }
+.w35 { width: 6rem; }
+.w25 { width: 2.9rem; }
+.w15 { width: 1.5rem; }
+.h45 { height: 12rem; }
+.h35 { height: 6rem; }
+.h25 { height: 3rem; }
+.h15 { height: 1.5rem; }  
+.pa25 { padding: .75rem; }
+.f7 { font-size:.75rem }
+.f8 { font-size: .5rem }
+
+/* medium */
+@media screen and (min-width: 30em) and (max-width: 60em) {
+  .maxh6-m { max-height: 32rem; }
+  .w-15-m { width: 15%; }
+  .w-5-m { width: 5%; }
+  .w45-m { width: 12rem; }
+  .w35-m { width: 6rem; }
+  .w25-m { width: 2.9rem; }
+  .w15-m { width: 1.5rem; }
+  .h45-m { height: 12rem; }
+  .h35-m { height: 6rem; }
+  .h25-m { height: 3rem; }
+  .h15-m { height: 1.5em; }
+  .pa25-m { padding: .75rem; }
+  .f7-m { font-size:.75rem }
+  .f8-m { font-size: .5rem }
+}
+
+/* large */
+@media screen and (min-width: 60em)  {
+  .maxh6-ns {max-height: 32rem;}
+  .w-15-ns { width: 15%; }
+  .w-5-ns { width: 5%; }
+  .w45-ns { width: 12rem; }
+  .w35-ns { width: 6rem; }
+  .w25-ns { width: 2.9rem; }
+  .w15-ns { width: 1.5rem; }
+  .h45-ns { height: 12rem; }
+  .h35-ns { height: 6rem; }
+  .h25-ns { height: 3rem; }
+	.mw55-ns { max-width: 24rem; }
+  .pa25-ns { padding: .75rem; }
+  .f7-ns { font-size:.75rem }
+  .f8-ns { font-size: .5rem }
+}
+
+
+
+/** 
+* Menu (responsive to scroll )  
+* Used in Views/Header
+**/
+
+.menu-hidden {
+	top: -4em;
+  transition: 200ms ease-out;
+}
+.menu-showing {
+	top: 0em;
+  transition: 200ms ease-out;
+}
+
+/** 
+*	Utilities
+* Used mostly for modals 
+**/
+
+.fadein-2 {
+  opacity: 0;
+  animation: fadeIn 200ms 1;
+  animation-fill-mode: forwards;
+	list-style: none;
+}
+
+.transition {
+  transition: 0.5s;
+}
+
+.bg-black-trans { 
+	background-color: rgba(0, 0, 0, 0.7); 
+}
+
+.transparent {
+  background-color: rgba(0,0,0,0);
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0.0;
+  }
+  100% {
+    opacity: 1.0;
+  }
+}
+.focus-active:focus {
+  box-shadow: 5px 5px #333333;
+}

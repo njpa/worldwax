@@ -1,0 +1,16 @@
+/** 
+*	Alert notifications 
+*	Used in Views/Alert
+**/
+
+.alert {
+  top: -4em;
+  animation: slide-up 3s linear;
+ }
+
+@keyframes slide-up {
+    0% { transform: translate(0em,0em); }
+    9% { transform: translate(0em,3em); }
+    93% { transform: translate(0em,3em); }
+    100% { transform: translate(0em,0em); }
+}

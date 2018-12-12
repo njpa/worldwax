@@ -1,0 +1,11 @@
+/** 
+* Used in the New item forms 
+**/
+
+.black-30-placeholder::placeholder {
+	color : rgb(190, 190, 190);
+}
+
+.custom-p-spacing {
+	letter-spacing: .02rem;
+}

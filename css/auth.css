@@ -1,0 +1,26 @@
+.big-art {
+  font-size: 10rem;
+  line-height: 7.2rem;
+  letter-spacing: -1rem;
+  transform: scale(1, 1.05);
+  text-shadow: 0 0 20px rgba(255,255,255,0.5);
+  /* text-shadow: 0 0 10px rgba(1,0,0,0.5);*/
+}
+
+.mygradient {
+  background: linear-gradient(#e66465, #9198e5);
+}
+
+@media screen and (min-width: 60em)  {
+  .max-height {
+    max-height: 39rem;
+  }
+  .min-height {
+    min-height: 32rem;
+  }
+  .min-width {
+    min-width: 54rem;
+  }
+}
+
+

@@ -82,9 +82,9 @@ viewFooter =
         div [ class "fl w-100 bg-near-white" ]
             [ div [ class "" ]
                 [ div []
-                    [ span [ class "w1 absolute" ]
+                    [ span [ class "w4 absolute" ]
                         [ Graphic.vinylBackground ]
-                    , span [ class "absolute w1 spin v-mid" ]
+                    , span [ class "absolute w4 spin-enabled-33 v-mid" ]
                         [ img
                             [ src path2
                             ]
