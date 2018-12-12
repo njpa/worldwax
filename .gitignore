@@ -5,6 +5,4 @@ elm-stuff/
 dist/
 .cache
 
-package-lock.json
-
 *.vim
