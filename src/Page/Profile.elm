@@ -134,8 +134,7 @@ view model =
                                     text ""
                     in
                         div [ class "profile-page" ]
-                            [ Page.viewErrors ClickedDismissErrors model.errors
-                            , div [ class "user-info" ]
+                            [ div [ class "user-info" ]
                                 [ div [ class "container" ]
                                     [ div [ class "row" ]
                                         [ div [ class "col-xs-12 col-md-10 offset-md-1" ]

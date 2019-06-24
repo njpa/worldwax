@@ -39,7 +39,7 @@ init session =
         maybeCred =
             Session.cred session
     in
-        ( { message = "home page"
+        ( { message = "the home page"
           , session = session
           }
         , Cmd.none
@@ -55,10 +55,7 @@ view model =
     { title = model.message
     , content =
         div []
-            [ div []
-                [ Html.text model.message ]
-            , a [ Route.href Route.Article ] [ text "article" ]
-            ]
+            [ text "hello" ]
     }
 
 
