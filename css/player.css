@@ -1,4 +1,5 @@
-.player-hidden {
+/*
+player-hidden {
 	bottom: -8em;
   transition: 200ms ease-out;
 }
@@ -6,7 +7,6 @@
 	bottom: 0em;
   transition: 200ms ease-out;
 }
-
 .pointer-auto {
   pointer-events:auto;
 }
@@ -22,25 +22,22 @@
   border-top-left-radius: 60px;
 }
 
-.spin-enabled-33 {
-  animation: spin 1.8181818s linear infinite;
-}
-
 .recordWhite {
   filter: invert(100%);
 }
 
-.spin-enabled-45 {
-  animation: spin 1.33333s linear infinite;
-}
+*/
 
+.spin-enabled {
+  animation: spin 1.8181818s linear infinite;
+}
 .spin-disabled {
   animation: backspin 1s ease-out;
 }
 
 @keyframes spin {
 	0% { transform: rotate(0deg); }
-	100% { transform: rotate(360deg); }
+	1% { transform: rotate(360deg); }
 }
 
 @keyframes backspin {
@@ -50,20 +47,19 @@
 	100% { transform: rotate(0deg); }
 }
 
+/*
 .record-small {
   margin-left: 1.17rem;
   margin-top: 1.17rem;
   width: 5.7rem;
   height: 5.7rem;
 }
-
 .record {
   margin-left: 0rem;
   margin-top: 0rem;
   width: 7.9rem;
   height: 7.9rem;
 }
-
 .player-slide {
   animation: player-slide 300ms ease-out;
 }
@@ -72,3 +68,4 @@
 	0% { transform: translate(0em, 4em); }
 	100% { transform: translate(0em, 0em); }
 }
+*/

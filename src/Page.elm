@@ -8,7 +8,7 @@ import Route exposing (Route)
 import Viewer exposing (Viewer)
 import Viewer.Cred as Cred exposing (Cred)
 import Username exposing (Username)
-import Element exposing (Element, el, image, text, column, row, alignRight, fill, height, width, rgb255, spacing, px, centerY, padding, minimum, maximum, centerX, fillPortion)
+import Element exposing (Element, htmlAttribute, el, image, text, column, row, alignRight, fill, height, width, rgb255, spacing, px, centerY, padding, minimum, maximum, centerX, fillPortion)
 import Element.Background as Background
 import Element.Font as Font
 import Element.Border as Border
@@ -113,7 +113,9 @@ recordsContainer =
 
 record : String -> Element msg
 record path =
-    row [ width (fillPortion 1) ]
+    row
+        [ width (fillPortion 1)
+        ]
         [ recordImage path ]
 
 
@@ -125,9 +127,19 @@ recordImage path =
     in
         Element.el
             [ width fill
-            , Element.inFront (image [ width fill ] { src = path, description = "" })
+            , Element.inFront
+                (image
+                    [ width fill
+                    , htmlAttribute (class "spin-enabled")
+                    ]
+                    { src = path, description = "" }
+                )
             ]
-            (image [ width fill ] { src = bg, description = "" })
+            (image
+                [ width fill
+                ]
+                { src = bg, description = "" }
+            )
 
 
 titlesContainer : Element msg
