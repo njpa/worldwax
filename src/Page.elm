@@ -59,6 +59,8 @@ viewMixer : Html msg
 viewMixer =
     Element.layout
         [ Background.color (rgb255 200 200 200)
+        , width fill
+        , padding 0
         ]
         mixerContainer
 
@@ -87,7 +89,6 @@ mixer =
         [ height fill
         , width fill
         , Background.color (rgb255 0 0 0)
-        , Font.color (rgb255 255 255 255)
         ]
         [ recordsContainer
         , titlesContainer
@@ -95,13 +96,14 @@ mixer =
         , timesContainer
         , transportContainer
         , crossfaderContainer
+        , menuContainer
         ]
 
 
 recordsContainer : Element msg
 recordsContainer =
     row
-        [ height (fillPortion 2)
+        [ height (fillPortion 15)
         , width fill
         , Background.color (rgb255 20 20 20)
         , Font.color (rgb255 255 255 255)
@@ -114,7 +116,7 @@ recordsContainer =
 record : String -> Element msg
 record path =
     row
-        [ width (fillPortion 1)
+        [ width (fill)
         ]
         [ recordImage path ]
 
@@ -135,29 +137,26 @@ recordImage path =
                     { src = path, description = "" }
                 )
             ]
-            (image
-                [ width fill
-                ]
-                { src = bg, description = "" }
-            )
+            (image [ width fill ] { src = bg, description = "" })
 
 
 titlesContainer : Element msg
 titlesContainer =
     row
-        [ height (fillPortion 1)
+        [ height (fillPortion 5)
         , width fill
         , Font.color (rgb255 255 255 255)
+        , Font.size 40
         ]
-        [ titleLeft
-        , titleRight
+        [ recordTitle "Carnaval" "Discomoda"
+        , recordTitle "Cada Cual Con El Suyo" "Mario Y Sus Diamantes"
         ]
 
 
 cuepointsContainer : Element msg
 cuepointsContainer =
     column
-        [ height (fillPortion 1)
+        [ height (fillPortion 10)
         , width fill
         ]
         [ cuepointsTitle
@@ -168,7 +167,7 @@ cuepointsContainer =
 timesContainer : Element msg
 timesContainer =
     row
-        [ height (fillPortion 1)
+        [ height (fillPortion 5)
         , width fill
         , Background.color (rgb255 200 200 200)
         ]
@@ -180,7 +179,7 @@ timesContainer =
 transportContainer : Element msg
 transportContainer =
     el
-        [ height (fillPortion 1)
+        [ height (fillPortion 10)
         , width fill
         , Background.color (rgb255 10 10 10)
         ]
@@ -190,11 +189,45 @@ transportContainer =
 crossfaderContainer : Element msg
 crossfaderContainer =
     el
-        [ height (fillPortion 1)
+        [ height (fillPortion 10)
         , width fill
         , Background.color (rgb255 40 40 30)
         ]
         (text "crossfader")
+
+
+menuContainer : Element msg
+menuContainer =
+    el
+        [ height (fillPortion 15)
+        , width fill
+        , Background.color (rgb255 0 0 0)
+        ]
+        menuRow
+
+
+menuRow : Element msg
+menuRow =
+    let
+        ( records, mix, samples ) =
+            ( "svg/menu-button-records.svg"
+            , "svg/menu-button-mix.svg"
+            , "svg/menu-button-samples.svg"
+            )
+    in
+        row [ width fill ]
+            [ menuItem (String.concat [ s3, records ])
+            , menuItem (String.concat [ s3, mix ])
+            , menuItem (String.concat [ s3, samples ])
+            ]
+
+
+menuItem : String -> Element msg
+menuItem path =
+    el
+        [ width fill
+        ]
+        (image [ width (px 200), centerX ] { src = path, description = "" })
 
 
 time : String -> Element msg
@@ -208,14 +241,16 @@ time actual =
         (text actual)
 
 
-titleLeft : Element msg
-titleLeft =
-    el
+recordTitle : String -> String -> Element msg
+recordTitle song album =
+    column
         [ height fill
         , width (fillPortion 1)
         , Background.color (rgb255 50 50 50)
         ]
-        (text "title left")
+        [ text song
+        , text album
+        ]
 
 
 titleRight : Element msg
