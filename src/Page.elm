@@ -8,7 +8,7 @@ import Route exposing (Route)
 import Viewer exposing (Viewer)
 import Viewer.Cred as Cred exposing (Cred)
 import Username exposing (Username)
-import Element exposing (Element, htmlAttribute, el, image, text, column, row, alignRight, fill, height, width, rgb255, spacing, px, centerY, padding, minimum, maximum, centerX, fillPortion)
+import Element exposing (Element, htmlAttribute, el, image, text, column, row, alignRight, fill, height, width, rgb255, spacing, px, centerY, padding, minimum, maximum, centerX, fillPortion, alignTop, alignBottom)
 import Element.Background as Background
 import Element.Font as Font
 import Element.Border as Border
@@ -88,7 +88,6 @@ mixer =
     column
         [ height fill
         , width fill
-        , Background.color (rgb255 0 0 0)
         ]
         [ recordsContainer
         , titlesContainer
@@ -100,29 +99,14 @@ mixer =
         ]
 
 
-borderDebug : List (Element.Attribute msg)
-borderDebug =
-    [ Border.dashed
-    , Border.widthEach
-        { bottom = 3
-        , left = 0
-        , right = 0
-        , top = 0
-        }
-    , Border.color (rgb255 200 200 200)
-    ]
-
-
 recordsContainer : Element msg
 recordsContainer =
     row
-        (List.append
-            [ height (fillPortion 15)
-            , width fill
-            , Font.color (rgb255 255 255 255)
-            ]
-            borderDebug
-        )
+        [ height (fillPortion 15)
+        , width fill
+        , Background.color (rgb255 20 20 20)
+        , Font.color (rgb255 255 255 255)
+        ]
         [ record (String.concat [ s3, "rhythm-machine-fania-all-stars-label.png" ])
         , record (String.concat [ s3, "headhunters-herbie-hancock-label.png" ])
         ]
@@ -158,13 +142,12 @@ recordImage path =
 titlesContainer : Element msg
 titlesContainer =
     row
-        ([ height (fillPortion 5)
-         , width fill
-         , Font.color (rgb255 255 255 255)
-         , Font.size 40
-         ]
-            ++ borderDebug
-        )
+        [ height (fillPortion 5)
+        , width fill
+        , Font.color (rgb255 255 255 255)
+        , Background.color (rgb255 20 20 20)
+        , Font.size 40
+        ]
         [ recordTitle "Carnaval" "Discomoda"
         , recordTitle "Cada Cual Con El Suyo" "Mario Y Sus Diamantes"
         ]
@@ -175,6 +158,7 @@ cuepointsContainer =
     column
         [ height (fillPortion 10)
         , width fill
+        , Background.color (rgb255 20 20 20)
         ]
         [ el
             [ centerX ]
@@ -219,13 +203,22 @@ cuepoint label col =
 timesContainer : Element msg
 timesContainer =
     row
-        ([ height (fillPortion 5)
-         , width fill
-         ]
-            ++ borderDebug
-        )
-        [ time "3:03 / 4:00"
-        , time "4:44 / 8:00"
+        [ height (fillPortion 5)
+        , width fill
+        , Background.color (rgb255 20 20 20)
+        ]
+        [ el
+            [ width (fillPortion 1)
+            , alignBottom
+            , Font.color (rgb255 255 255 255)
+            ]
+            (el [ centerX ] (text "4:44 / 8:00"))
+        , el
+            [ width (fillPortion 1)
+            , alignBottom
+            , Font.color (rgb255 255 255 255)
+            ]
+            (el [ centerX ] (text "4:44 / 8:00"))
         ]
 
 
@@ -241,9 +234,9 @@ transportContainer =
         row
             [ height (fillPortion 10)
             , width fill
-            , Background.color (rgb255 10 10 10)
+            , Background.color (rgb255 20 20 20)
             ]
-            [ row [ width (fillPortion 1), spacing 10, padding 10 ]
+            [ row [ width (fillPortion 1), alignTop, spacing 10, padding 10 ]
                 [ (image [ width (fillPortion 1) ]
                     { src = rewind, description = "" }
                   )
@@ -254,7 +247,7 @@ transportContainer =
                     { src = forward, description = "" }
                   )
                 ]
-            , row [ width (fillPortion 1), spacing 10, padding 10 ]
+            , row [ width (fillPortion 1), alignTop, spacing 10, padding 10 ]
                 [ (image [ width (fillPortion 1) ]
                     { src = rewind, description = "" }
                   )
@@ -270,12 +263,19 @@ transportContainer =
 
 crossfaderContainer : Element msg
 crossfaderContainer =
-    el
-        [ height (fillPortion 10)
-        , width fill
-        , Background.color (rgb255 40 40 30)
-        ]
-        (text "crossfader")
+    let
+        crossfader =
+            String.concat [ s3, "svg/crossfader.svg" ]
+    in
+        el
+            [ height (fillPortion 10)
+            , width fill
+            , Background.color (rgb255 20 20 20)
+            , padding 10
+            ]
+            (image [ width (fillPortion 1) ]
+                { src = crossfader, description = "" }
+            )
 
 
 menuContainer : Element msg
