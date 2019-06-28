@@ -100,14 +100,29 @@ mixer =
         ]
 
 
+borderDebug : List (Element.Attribute msg)
+borderDebug =
+    [ Border.dashed
+    , Border.widthEach
+        { bottom = 3
+        , left = 0
+        , right = 0
+        , top = 0
+        }
+    , Border.color (rgb255 200 200 200)
+    ]
+
+
 recordsContainer : Element msg
 recordsContainer =
     row
-        [ height (fillPortion 15)
-        , width fill
-        , Background.color (rgb255 20 20 20)
-        , Font.color (rgb255 255 255 255)
-        ]
+        (List.append
+            [ height (fillPortion 15)
+            , width fill
+            , Font.color (rgb255 255 255 255)
+            ]
+            borderDebug
+        )
         [ record (String.concat [ s3, "rhythm-machine-fania-all-stars-label.png" ])
         , record (String.concat [ s3, "headhunters-herbie-hancock-label.png" ])
         ]
@@ -143,11 +158,13 @@ recordImage path =
 titlesContainer : Element msg
 titlesContainer =
     row
-        [ height (fillPortion 5)
-        , width fill
-        , Font.color (rgb255 255 255 255)
-        , Font.size 40
-        ]
+        ([ height (fillPortion 5)
+         , width fill
+         , Font.color (rgb255 255 255 255)
+         , Font.size 40
+         ]
+            ++ borderDebug
+        )
         [ recordTitle "Carnaval" "Discomoda"
         , recordTitle "Cada Cual Con El Suyo" "Mario Y Sus Diamantes"
         ]
@@ -159,18 +176,54 @@ cuepointsContainer =
         [ height (fillPortion 10)
         , width fill
         ]
-        [ cuepointsTitle
-        , cuepointsButtonsContainer
+        [ el
+            [ centerX ]
+            (text "cuepoints")
+        , row
+            [ width fill ]
+            [ row
+                [ width (fillPortion 1)
+                , padding 10
+                , spacing 10
+                ]
+                [ cuepoint "A" 150
+                , cuepoint "B" 160
+                , cuepoint "C" 180
+                ]
+            , row
+                [ width (fillPortion 1)
+                , padding 10
+                , spacing 10
+                ]
+                [ cuepoint "A" 150
+                , cuepoint "B" 160
+                , cuepoint "C" 180
+                ]
+            ]
         ]
+
+
+cuepoint : String -> Int -> Element msg
+cuepoint label col =
+    let
+        path =
+            "https://worldwax-mvp.s3.eu-central-1.amazonaws.com/pad-cuepoint.svg"
+    in
+        el
+            [ width (fillPortion 1) ]
+            (image [ width fill ]
+                { src = path, description = "" }
+            )
 
 
 timesContainer : Element msg
 timesContainer =
     row
-        [ height (fillPortion 5)
-        , width fill
-        , Background.color (rgb255 200 200 200)
-        ]
+        ([ height (fillPortion 5)
+         , width fill
+         ]
+            ++ borderDebug
+        )
         [ time "3:03 / 4:00"
         , time "4:44 / 8:00"
         ]
@@ -178,12 +231,41 @@ timesContainer =
 
 transportContainer : Element msg
 transportContainer =
-    el
-        [ height (fillPortion 10)
-        , width fill
-        , Background.color (rgb255 10 10 10)
-        ]
-        (text "transport")
+    let
+        ( rewind, pause, forward ) =
+            ( String.concat [ s3, "svg/transport-button-rewind.svg" ]
+            , String.concat [ s3, "svg/transport-button-pause.svg" ]
+            , String.concat [ s3, "svg/transport-button-forward.svg" ]
+            )
+    in
+        row
+            [ height (fillPortion 10)
+            , width fill
+            , Background.color (rgb255 10 10 10)
+            ]
+            [ row [ width (fillPortion 1), spacing 10, padding 10 ]
+                [ (image [ width (fillPortion 1) ]
+                    { src = rewind, description = "" }
+                  )
+                , (image [ width (fillPortion 1) ]
+                    { src = pause, description = "" }
+                  )
+                , (image [ width (fillPortion 1) ]
+                    { src = forward, description = "" }
+                  )
+                ]
+            , row [ width (fillPortion 1), spacing 10, padding 10 ]
+                [ (image [ width (fillPortion 1) ]
+                    { src = rewind, description = "" }
+                  )
+                , (image [ width (fillPortion 1) ]
+                    { src = pause, description = "" }
+                  )
+                , (image [ width (fillPortion 1) ]
+                    { src = forward, description = "" }
+                  )
+                ]
+            ]
 
 
 crossfaderContainer : Element msg
@@ -246,7 +328,6 @@ recordTitle song album =
     column
         [ height fill
         , width (fillPortion 1)
-        , Background.color (rgb255 50 50 50)
         ]
         [ text song
         , text album
@@ -261,63 +342,3 @@ titleRight =
         , Background.color (rgb255 70 70 70)
         ]
         (text "title right")
-
-
-cuepointsTitle : Element msg
-cuepointsTitle =
-    el
-        [ centerX
-        , height (fillPortion 1)
-        ]
-        (text "cuepoints")
-
-
-cuepointsButtonsContainer : Element msg
-cuepointsButtonsContainer =
-    row
-        [ width fill
-        , height (fillPortion 1)
-        ]
-        [ cuepointsLeft
-        , cuepointsRight
-        ]
-
-
-cuepointsLeft : Element msg
-cuepointsLeft =
-    row
-        [ height fill
-        , width (fillPortion 1)
-        ]
-        [ cuepoint "A" 150
-        , cuepoint "B" 160
-        , cuepoint "C" 180
-        ]
-
-
-cuepointsRight : Element msg
-cuepointsRight =
-    row
-        [ height fill
-        , width (fillPortion 1)
-        ]
-        [ cuepoint "A" 150
-        , cuepoint "B" 160
-        , cuepoint "C" 180
-        ]
-
-
-cuepoint : String -> Int -> Element msg
-cuepoint label col =
-    let
-        path =
-            "https://worldwax-mvp.s3.eu-central-1.amazonaws.com/pad-cuepoint.svg"
-    in
-        el
-            [ height fill
-            , width (fillPortion 3)
-            , Background.color (rgb255 col col col)
-            ]
-            (image [ width fill ]
-                { src = path, description = "" }
-            )
