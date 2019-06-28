@@ -114,29 +114,25 @@ recordsContainer =
 
 record : String -> Element msg
 record path =
-    row
-        [ width (fill)
-        ]
-        [ recordImage path ]
-
-
-recordImage : String -> Element msg
-recordImage path =
     let
         bg =
-            "https://worldwax-mvp.s3.eu-central-1.amazonaws.com/record-label.svg"
+            "https://worldwax-mvp.s3.eu-central-1.amazonaws.com/svg/label.svg"
     in
-        Element.el
-            [ width fill
-            , Element.inFront
-                (image
-                    [ width fill
-                    , htmlAttribute (class "spin-enabled")
-                    ]
-                    { src = path, description = "" }
-                )
+        row
+            [ width (fill)
             ]
-            (image [ width fill ] { src = bg, description = "" })
+            [ el
+                [ width fill
+                , Element.inFront
+                    (image
+                        [ width fill
+                        , htmlAttribute (class "spin-enabled")
+                        ]
+                        { src = path, description = "" }
+                    )
+                ]
+                (image [ width fill ] { src = bg, description = "" })
+            ]
 
 
 titlesContainer : Element msg
@@ -146,10 +142,35 @@ titlesContainer =
         , width fill
         , Font.color (rgb255 255 255 255)
         , Background.color (rgb255 20 20 20)
-        , Font.size 40
+        , padding 10
         ]
-        [ recordTitle "Carnaval" "Discomoda"
-        , recordTitle "Cada Cual Con El Suyo" "Mario Y Sus Diamantes"
+        [ column
+            [ height fill
+            , width (fillPortion 1)
+            , spacing 10
+            ]
+            [ el [ Font.size 40 ] (text "Carnaval")
+            , el [ Font.size 30 ] (text "Discomoda")
+            ]
+        , column
+            [ height fill
+            , width (fillPortion 1)
+            , spacing 10
+            ]
+            [ el [ Font.size 40 ] (text "Cada Cual Con El Suyo")
+            , el [ Font.size 30 ] (text "Mario Y Sus Diamantes")
+            ]
+        ]
+
+
+recordTitle : String -> String -> Element msg
+recordTitle song album =
+    column
+        [ height fill
+        , width (fillPortion 1)
+        ]
+        [ text song
+        , text album
         ]
 
 
@@ -170,18 +191,18 @@ cuepointsContainer =
                 , padding 10
                 , spacing 10
                 ]
-                [ cuepoint "A" 150
-                , cuepoint "B" 160
-                , cuepoint "C" 180
+                [ cuepoint "a" 150
+                , cuepoint "b" 160
+                , cuepoint "c" 180
                 ]
             , row
                 [ width (fillPortion 1)
                 , padding 10
                 , spacing 10
                 ]
-                [ cuepoint "A" 150
-                , cuepoint "B" 160
-                , cuepoint "C" 180
+                [ cuepoint "a" 150
+                , cuepoint "b" 160
+                , cuepoint "c" 180
                 ]
             ]
         ]
@@ -191,7 +212,12 @@ cuepoint : String -> Int -> Element msg
 cuepoint label col =
     let
         path =
-            "https://worldwax-mvp.s3.eu-central-1.amazonaws.com/pad-cuepoint.svg"
+            String.concat
+                [ s3
+                , "svg/cuepoint-button-"
+                , label
+                , ".svg"
+                ]
     in
         el
             [ width (fillPortion 1) ]
@@ -321,24 +347,3 @@ time actual =
         , centerY
         ]
         (text actual)
-
-
-recordTitle : String -> String -> Element msg
-recordTitle song album =
-    column
-        [ height fill
-        , width (fillPortion 1)
-        ]
-        [ text song
-        , text album
-        ]
-
-
-titleRight : Element msg
-titleRight =
-    el
-        [ height fill
-        , width (fillPortion 1)
-        , Background.color (rgb255 70 70 70)
-        ]
-        (text "title right")
