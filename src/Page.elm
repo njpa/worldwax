@@ -58,9 +58,11 @@ s3 =
 viewMixer : Html msg
 viewMixer =
     Element.layout
-        [ Background.color (rgb255 200 200 200)
+        [ Background.color (rgb255 0 0 0)
         , width fill
+        , height fill
         , padding 0
+        , spacing 0
         ]
         mixerContainer
 
@@ -104,7 +106,6 @@ recordsContainer =
     row
         [ height (fillPortion 15)
         , width fill
-        , Background.color (rgb255 20 20 20)
         , Font.color (rgb255 255 255 255)
         ]
         [ record (String.concat [ s3, "rhythm-machine-fania-all-stars-label.png" ])
@@ -116,7 +117,7 @@ record : String -> Element msg
 record path =
     let
         bg =
-            "https://worldwax-mvp.s3.eu-central-1.amazonaws.com/svg/label.svg"
+            s3 ++ "svg/label.svg"
     in
         row
             [ width (fill)
@@ -149,16 +150,16 @@ titlesContainer =
             , width (fillPortion 1)
             , spacing 10
             ]
-            [ el [ Font.size 40 ] (text "Carnaval")
-            , el [ Font.size 30 ] (text "Discomoda")
+            [ el [ Font.size 16 ] (text "Carnaval")
+            , el [ Font.size 12 ] (text "Discomoda")
             ]
         , column
             [ height fill
             , width (fillPortion 1)
             , spacing 10
             ]
-            [ el [ Font.size 40 ] (text "Cada Cual Con El Suyo")
-            , el [ Font.size 30 ] (text "Mario Y Sus Diamantes")
+            [ el [ Font.size 16 ] (text "Cada Cual Con El Suyo")
+            , el [ Font.size 12 ] (text "Mario Y Sus Diamantes")
             ]
         ]
 
@@ -237,12 +238,14 @@ timesContainer =
             [ width (fillPortion 1)
             , alignBottom
             , Font.color (rgb255 255 255 255)
+            , Font.size 12
             ]
             (el [ centerX ] (text "4:44 / 8:00"))
         , el
             [ width (fillPortion 1)
             , alignBottom
             , Font.color (rgb255 255 255 255)
+            , Font.size 12
             ]
             (el [ centerX ] (text "4:44 / 8:00"))
         ]
@@ -306,16 +309,6 @@ crossfaderContainer =
 
 menuContainer : Element msg
 menuContainer =
-    el
-        [ height (fillPortion 15)
-        , width fill
-        , Background.color (rgb255 0 0 0)
-        ]
-        menuRow
-
-
-menuRow : Element msg
-menuRow =
     let
         ( records, mix, samples ) =
             ( "svg/menu-button-records.svg"
@@ -323,27 +316,24 @@ menuRow =
             , "svg/menu-button-samples.svg"
             )
     in
-        row [ width fill ]
-            [ menuItem (String.concat [ s3, records ])
-            , menuItem (String.concat [ s3, mix ])
-            , menuItem (String.concat [ s3, samples ])
+        el
+            [ height (fillPortion 15)
+            , width fill
+            , Background.color (rgb255 0 0 0)
             ]
+            (row
+                [ width fill ]
+                [ menuItem (String.concat [ s3, records ])
+                , menuItem (String.concat [ s3, mix ])
+                , menuItem (String.concat [ s3, samples ])
+                ]
+            )
 
 
 menuItem : String -> Element msg
 menuItem path =
     el
         [ width fill
+        , padding 10
         ]
-        (image [ width (px 200), centerX ] { src = path, description = "" })
-
-
-time : String -> Element msg
-time actual =
-    el
-        [ height fill
-        , width (fillPortion 1)
-        , centerX
-        , centerY
-        ]
-        (text actual)
+        (image [ width (fillPortion 1), centerX ] { src = path, description = "" })
