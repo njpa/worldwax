@@ -1,206 +1,337 @@
-module Main exposing (..)
+module Main exposing (main)
 
-import Browser
-import Browser.Navigation as Nav
-import Graphic
-import Page exposing (Page)
-import Html exposing (..)
-import Html.Attributes exposing (src, href, style)
-import Svg exposing (..)
-import Svg.Attributes exposing (..)
-import Json.Decode as Decode exposing (Value)
-import Url
-import Route exposing (Route)
-import Page.Home as Home
-import Page.Profile as Profile
-import Page.Blank as Blank
-import Page.Article as Article
-import Session exposing (Session)
-import Username exposing (Username)
+import Browser exposing (element)
+import Html
+import Html.Attributes exposing (class)
+import Element exposing (Element, htmlAttribute, el, image, text, column, row, alignRight, fill, height, width, rgb255, spacing, px, centerY, padding, minimum, maximum, centerX, fillPortion, alignTop, alignBottom)
+import Element.Background as Background
+import Element.Font as Font
+import Element.Border as Border
 
 
--- MODEL
+main : Program () Model Msg
+main =
+    Browser.element
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = \_ -> Sub.none
+        }
 
 
-type Model
-    = Redirect Session
-    | Home Home.Model
-    | Profile Username Profile.Model
-    | Article Article.Model
+type Msg
+    = ClickPlay
 
 
-init : Value -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init flags url navKey =
-    changeRouteTo (Route.fromUrl url)
-        (Redirect (Session.decode navKey flags))
+initialModel : Model
+initialModel =
+    { record = "hello" }
 
 
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( initialModel, Cmd.none )
 
--- VIEW
+
+type alias Model =
+    { record : String }
 
 
-view : Model -> Browser.Document Msg
+s3 : String
+s3 =
+    "https://worldwax-mvp.s3.eu-central-1.amazonaws.com/"
+
+
+view : Model -> Html.Html msg
 view model =
+    Element.layout
+        [ Background.color (rgb255 0 0 0)
+        , width fill
+        , height fill
+        , padding 0
+        , spacing 0
+        ]
+        mixerContainer
+
+
+mixerContainer : Element msg
+mixerContainer =
     let
-        viewPage page toMsg config =
-            let
-                { title, body } =
-                    Page.view (Session.viewer (toSession model)) page config
-            in
-                { title = title
-                , body = List.map (Html.map toMsg) body
-                }
+        mobile =
+            True
     in
-        case model of
-            Redirect _ ->
-                viewPage Page.Other (\_ -> Ignored) Blank.view
-
-            Home home ->
-                viewPage Page.Home GotHomeMsg (Home.view home)
-
-            Profile username profile ->
-                viewPage (Page.Profile username) GotProfileMsg (Profile.view profile)
-
-            Article article ->
-                viewPage Page.Other GotArticleMsg (Article.view article)
+        el
+            [ centerX
+            , centerY
+            , if mobile then
+                (width fill)
+              else
+                (width (fill |> minimum 410 |> maximum 414))
+            , height fill
+            ]
+            mixer
 
 
 
 -- UPDATE
 
 
-type Msg
-    = Ignored
-    | ClickedLink Browser.UrlRequest
-    | ChangedRoute (Maybe Route)
-    | ChangedUrl Url.Url
-    | GotArticleMsg Article.Msg
-    | GotHomeMsg Home.Msg
-    | GotProfileMsg Profile.Msg
-    | GotSession Session
-
-
-toSession : Model -> Session
-toSession page =
-    case page of
-        Redirect session ->
-            session
-
-        Home home ->
-            Home.toSession home
-
-        Profile _ profile ->
-            Profile.toSession profile
-
-        Article article ->
-            Article.toSession article
-
-
-changeRouteTo : Maybe Route -> Model -> ( Model, Cmd Msg )
-changeRouteTo maybeRoute model =
-    let
-        session =
-            toSession model
-    in
-        case maybeRoute of
-            Nothing ->
-                Home.init session
-                    |> updateWith Home GotHomeMsg model
-
-            Just (Route.Home) ->
-                Home.init session
-                    |> updateWith Home GotHomeMsg model
-
-            Just (Route.Profile username) ->
-                Profile.init session username
-                    |> updateWith (Profile username) GotProfileMsg model
-
-            Just (Route.Article) ->
-                Article.init session
-                    |> updateWith Article GotArticleMsg model
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case ( msg, model ) of
-        ( ClickedLink urlRequest, _ ) ->
-            case urlRequest of
-                Browser.Internal url ->
-                    ( model
-                    , Nav.pushUrl (Session.navKey (toSession model))
-                        (Url.toString url)
-                    )
-
-                Browser.External href ->
-                    ( model
-                    , Nav.load href
-                    )
-
-        ( ChangedRoute route, _ ) ->
-            changeRouteTo route model
-
-        ( ChangedUrl url, _ ) ->
-            changeRouteTo (Route.fromUrl url) model
-
-        ( GotArticleMsg subMsg, Article article ) ->
-            Article.update subMsg article
-                |> updateWith Article GotArticleMsg model
-
-        ( GotHomeMsg subMsg, Home home ) ->
-            Home.update subMsg home
-                |> updateWith Home GotHomeMsg model
-
-        ( GotProfileMsg subMsg, Profile username profile ) ->
-            Profile.update subMsg profile
-                |> updateWith (Profile username) GotProfileMsg model
-
-        ( GotSession session, Redirect _ ) ->
-            ( Redirect session
-            , Route.replaceUrl (Session.navKey session) Route.Home
-            )
-
-        ( _, _ ) ->
+    case msg of
+        ClickPlay ->
             ( model, Cmd.none )
 
 
-updateWith : (subModel -> Model) -> (subMsg -> Msg) -> Model -> ( subModel, Cmd subMsg ) -> ( Model, Cmd Msg )
-updateWith toModel toMsg model ( subModel, subCmd ) =
-    ( toModel subModel
-    , Cmd.map toMsg subCmd
-    )
+mixer : Element msg
+mixer =
+    column
+        [ height fill
+        , width fill
+        ]
+        [ recordsContainer
+        , titlesContainer
+        , cuepointsContainer
+        , timesContainer
+        , transportContainer
+        , crossfaderContainer
+        , menuContainer
+        ]
 
 
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    case model of
-        Redirect _ ->
-            Session.changes GotSession (Session.navKey (toSession model))
-
-        Home home ->
-            Sub.map GotHomeMsg (Home.subscriptions home)
-
-        Profile _ profile ->
-            Sub.map GotProfileMsg (Profile.subscriptions profile)
-
-        Article article ->
-            Sub.map GotArticleMsg (Article.subscriptions article)
+recordsContainer : Element msg
+recordsContainer =
+    row
+        [ height (fillPortion 15)
+        , width fill
+        , Font.color (rgb255 255 255 255)
+        ]
+        [ record (String.concat [ s3, "rhythm-machine-fania-all-stars-label.png" ])
+        , record (String.concat [ s3, "headhunters-herbie-hancock-label.png" ])
+        ]
 
 
+record : String -> Element msg
+record path =
+    let
+        bg =
+            s3 ++ "svg/label.svg"
+    in
+        row
+            [ width (fill)
+            ]
+            [ el
+                [ width fill
+                , Element.inFront
+                    (image
+                        [ width fill
+                        , htmlAttribute (class "spin-enabled")
+                        ]
+                        { src = path, description = "" }
+                    )
+                ]
+                (image [ width fill ] { src = bg, description = "" })
+            ]
 
--- MAIN
+
+titlesContainer : Element msg
+titlesContainer =
+    row
+        [ height (fillPortion 5)
+        , width fill
+        , Font.color (rgb255 255 255 255)
+        , Background.color (rgb255 20 20 20)
+        , padding 10
+        ]
+        [ column
+            [ height fill
+            , width (fillPortion 1)
+            , spacing 10
+            ]
+            [ el [ Font.size 16 ] (text "Carnaval")
+            , el [ Font.size 12 ] (text "Discomoda")
+            ]
+        , column
+            [ height fill
+            , width (fillPortion 1)
+            , spacing 10
+            ]
+            [ el [ Font.size 16 ] (text "Cada Cual Con El Suyo")
+            , el [ Font.size 12 ] (text "Mario Y Sus Diamantes")
+            ]
+        ]
 
 
-main : Program Value Model Msg
-main =
-    Browser.application
-        { init = init
-        , onUrlChange = ChangedUrl
-        , onUrlRequest = ClickedLink
-        , subscriptions = subscriptions
-        , update = update
-        , view = view
-        }
+recordTitle : String -> String -> Element msg
+recordTitle song album =
+    column
+        [ height fill
+        , width (fillPortion 1)
+        ]
+        [ text song
+        , text album
+        ]
+
+
+cuepointsContainer : Element msg
+cuepointsContainer =
+    column
+        [ height (fillPortion 10)
+        , width fill
+        , Background.color (rgb255 20 20 20)
+        ]
+        [ el
+            [ centerX ]
+            (text "cuepoints")
+        , row
+            [ width fill ]
+            [ row
+                [ width (fillPortion 1)
+                , padding 10
+                , spacing 10
+                ]
+                [ cuepoint "a" 150
+                , cuepoint "b" 160
+                , cuepoint "c" 180
+                ]
+            , row
+                [ width (fillPortion 1)
+                , padding 10
+                , spacing 10
+                ]
+                [ cuepoint "a" 150
+                , cuepoint "b" 160
+                , cuepoint "c" 180
+                ]
+            ]
+        ]
+
+
+cuepoint : String -> Int -> Element msg
+cuepoint label col =
+    let
+        path =
+            String.concat
+                [ s3
+                , "svg/cuepoint-button-"
+                , label
+                , ".svg"
+                ]
+    in
+        el
+            [ width (fillPortion 1) ]
+            (image [ width fill ]
+                { src = path, description = "" }
+            )
+
+
+timesContainer : Element msg
+timesContainer =
+    row
+        [ height (fillPortion 5)
+        , width fill
+        , Background.color (rgb255 20 20 20)
+        ]
+        [ el
+            [ width (fillPortion 1)
+            , alignBottom
+            , Font.color (rgb255 255 255 255)
+            , Font.size 12
+            ]
+            (el [ centerX ] (text "4:44 / 8:00"))
+        , el
+            [ width (fillPortion 1)
+            , alignBottom
+            , Font.color (rgb255 255 255 255)
+            , Font.size 12
+            ]
+            (el [ centerX ] (text "4:44 / 8:00"))
+        ]
+
+
+transportContainer : Element msg
+transportContainer =
+    let
+        ( rewind, pause, forward ) =
+            ( String.concat [ s3, "svg/transport-button-rewind.svg" ]
+            , String.concat [ s3, "svg/transport-button-pause.svg" ]
+            , String.concat [ s3, "svg/transport-button-forward.svg" ]
+            )
+    in
+        row
+            [ height (fillPortion 10)
+            , width fill
+            , Background.color (rgb255 20 20 20)
+            ]
+            [ row [ width (fillPortion 1), alignTop, spacing 10, padding 10 ]
+                [ (image [ width (fillPortion 1) ]
+                    { src = rewind, description = "" }
+                  )
+                , (image [ width (fillPortion 1) ]
+                    { src = pause, description = "" }
+                  )
+                , (image [ width (fillPortion 1) ]
+                    { src = forward, description = "" }
+                  )
+                ]
+            , row [ width (fillPortion 1), alignTop, spacing 10, padding 10 ]
+                [ (image [ width (fillPortion 1) ]
+                    { src = rewind, description = "" }
+                  )
+                , (image [ width (fillPortion 1) ]
+                    { src = pause, description = "" }
+                  )
+                , (image [ width (fillPortion 1) ]
+                    { src = forward, description = "" }
+                  )
+                ]
+            ]
+
+
+crossfaderContainer : Element msg
+crossfaderContainer =
+    let
+        crossfader =
+            String.concat [ s3, "svg/crossfader.svg" ]
+    in
+        el
+            [ height (fillPortion 10)
+            , width fill
+            , Background.color (rgb255 20 20 20)
+            , padding 10
+            ]
+            (image [ width (fillPortion 1) ]
+                { src = crossfader, description = "" }
+            )
+
+
+menuContainer : Element msg
+menuContainer =
+    let
+        ( records, mix, samples ) =
+            ( "svg/menu-button-records.svg"
+            , "svg/menu-button-mix.svg"
+            , "svg/menu-button-samples.svg"
+            )
+    in
+        el
+            [ height (fillPortion 15)
+            , width fill
+            , Background.color (rgb255 0 0 0)
+            ]
+            (row
+                [ width fill ]
+                [ menuItem (String.concat [ s3, records ])
+                , menuItem (String.concat [ s3, mix ])
+                , menuItem (String.concat [ s3, samples ])
+                ]
+            )
+
+
+menuItem : String -> Element msg
+menuItem path =
+    el
+        [ width fill
+        , padding 10
+        ]
+        (image [ width (fillPortion 1), centerX ] { src = path, description = "" })
