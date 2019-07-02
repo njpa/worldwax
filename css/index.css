@@ -1,12 +1,8 @@
-
-/*
-@import './player';
-@import './tachyons';
-
-@import './alert';
-@import './app';
-@import './auth';
-*/
+body {
+	height: 100%; /* Fill the window */
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+}
 
 * {
   touch-action: none;
@@ -30,4 +26,3 @@
 	50% { transform: rotate(-10deg); }
 	100% { transform: rotate(0deg); }
 }
-
