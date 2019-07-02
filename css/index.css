@@ -8,6 +8,10 @@
 @import './auth';
 */
 
+* {
+  touch-action: none;
+}
+
 .spin-enabled {
   animation: spin 1.8181818s linear infinite;
 }
