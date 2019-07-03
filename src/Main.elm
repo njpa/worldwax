@@ -2,11 +2,15 @@ module Main exposing (main)
 
 import Browser exposing (element)
 import Html
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, classList)
+import Element.Events exposing (onClick)
 import Element exposing (Element, htmlAttribute, el, image, text, column, row, alignRight, fill, height, width, rgb255, spacing, px, centerY, padding, minimum, maximum, centerX, fillPortion, alignTop, alignBottom)
 import Element.Background as Background
 import Element.Font as Font
 import Element.Border as Border
+
+
+-- MAIN
 
 
 main : Program () Model Msg
@@ -19,13 +23,38 @@ main =
         }
 
 
+type RecordStatus
+    = Playing
+    | Stopped
+
+
+type Turntable
+    = TurntableLeft
+    | TurntableRight
+
+
 type Msg
-    = ClickPlay
+    = ClickedPlay Turntable
+    | ClickedStop Turntable
+
+
+
+-- MODEL
+
+
+type alias Model =
+    { record : String
+    , turntableLeftStatus : RecordStatus
+    , turntableRightStatus : RecordStatus
+    }
 
 
 initialModel : Model
 initialModel =
-    { record = "hello" }
+    { record = "hello"
+    , turntableLeftStatus = Stopped
+    , turntableRightStatus = Stopped
+    }
 
 
 init : () -> ( Model, Cmd Msg )
@@ -33,16 +62,44 @@ init _ =
     ( initialModel, Cmd.none )
 
 
-type alias Model =
-    { record : String }
-
-
 s3 : String
 s3 =
     "https://worldwax-mvp.s3.eu-central-1.amazonaws.com/"
 
 
-view : Model -> Html.Html msg
+
+-- UPDATE
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        ClickedPlay turntable ->
+            if turntable == TurntableLeft then
+                ( { model | turntableLeftStatus = Playing }
+                , Cmd.none
+                )
+            else
+                ( { model | turntableRightStatus = Playing }
+                , Cmd.none
+                )
+
+        ClickedStop turntable ->
+            if turntable == TurntableLeft then
+                ( { model | turntableLeftStatus = Stopped }
+                , Cmd.none
+                )
+            else
+                ( { model | turntableRightStatus = Stopped }
+                , Cmd.none
+                )
+
+
+
+-- VIEW
+
+
+view : Model -> Html.Html Msg
 view model =
     Element.layout
         [ Background.color (rgb255 0 0 0)
@@ -51,11 +108,11 @@ view model =
         , padding 0
         , spacing 0
         ]
-        mixerContainer
+        (mixerContainer model)
 
 
-mixerContainer : Element msg
-mixerContainer =
+mixerContainer : Model -> Element Msg
+mixerContainer model =
     let
         mobile =
             True
@@ -69,53 +126,52 @@ mixerContainer =
                 (width (fill |> minimum 410 |> maximum 414))
             , height fill
             ]
-            mixer
+            (mixer model)
 
 
-
--- UPDATE
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        ClickPlay ->
-            ( model, Cmd.none )
-
-
-mixer : Element msg
-mixer =
+mixer : Model -> Element Msg
+mixer model =
     column
         [ height fill
         , width fill
         ]
-        [ recordsContainer
+        [ recordsContainer model
         , titlesContainer
         , cuepointsContainer
         , timesContainer
-        , transportContainer
+        , transportContainer model
         , crossfaderContainer
         , menuContainer
         ]
 
 
-recordsContainer : Element msg
-recordsContainer =
+recordsContainer : Model -> Element msg
+recordsContainer model =
     row
         [ height (fillPortion 15)
         , width fill
         , Font.color (rgb255 255 255 255)
         ]
-        [ record (String.concat [ s3, "rhythm-machine-fania-all-stars-label.png" ])
-        , record (String.concat [ s3, "headhunters-herbie-hancock-label.png" ])
+        [ record
+            (String.concat [ s3, "rhythm-machine-fania-all-stars-label.png" ])
+            model.turntableLeftStatus
+        , record
+            (String.concat [ s3, "headhunters-herbie-hancock-label.png" ])
+            model.turntableRightStatus
         ]
 
 
-record : String -> Element msg
-record path =
+record : String -> RecordStatus -> Element msg
+record path recordStatus =
     let
         bg =
             s3 ++ "svg/label.svg"
+
+        recordClass =
+            classList
+                [ ( "spin-disabled", recordStatus == Stopped )
+                , ( "spin-enabled", recordStatus == Playing )
+                ]
     in
         row
             [ width (fill)
@@ -125,7 +181,7 @@ record path =
                 , Element.inFront
                     (image
                         [ width fill
-                        , htmlAttribute (class "spin-enabled")
+                        , htmlAttribute (recordClass)
                         ]
                         { src = path, description = "" }
                     )
@@ -249,8 +305,8 @@ timesContainer =
         ]
 
 
-transportContainer : Element msg
-transportContainer =
+transportContainer : Model -> Element Msg
+transportContainer model =
     let
         ( rewind, pause, forward ) =
             ( String.concat [ s3, "svg/transport-button-rewind.svg" ]
@@ -267,7 +323,13 @@ transportContainer =
                 [ (image [ width (fillPortion 1) ]
                     { src = rewind, description = "" }
                   )
-                , (image [ width (fillPortion 1) ]
+                , (image
+                    [ width (fillPortion 1)
+                    , if model.turntableLeftStatus == Playing then
+                        onClick (ClickedStop TurntableLeft)
+                      else
+                        onClick (ClickedPlay TurntableLeft)
+                    ]
                     { src = pause, description = "" }
                   )
                 , (image [ width (fillPortion 1) ]
@@ -278,7 +340,13 @@ transportContainer =
                 [ (image [ width (fillPortion 1) ]
                     { src = rewind, description = "" }
                   )
-                , (image [ width (fillPortion 1) ]
+                , (image
+                    [ width (fillPortion 1)
+                    , if model.turntableRightStatus == Playing then
+                        onClick (ClickedStop TurntableRight)
+                      else
+                        onClick (ClickedPlay TurntableRight)
+                    ]
                     { src = pause, description = "" }
                   )
                 , (image [ width (fillPortion 1) ]
