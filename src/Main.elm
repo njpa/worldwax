@@ -1,13 +1,14 @@
 module Main exposing (main)
 
 import Browser exposing (element)
-import Html
-import Html.Attributes exposing (class, classList)
+import Html exposing (audio)
+import Html.Attributes exposing (class, classList, type_, controls, id, src, autoplay)
 import Element.Events exposing (onClick)
-import Element exposing (Element, htmlAttribute, el, image, text, column, row, alignRight, fill, height, width, rgb255, spacing, px, centerY, padding, minimum, maximum, centerX, fillPortion, alignTop, alignBottom)
+import Element exposing (Element, html, htmlAttribute, el, image, text, column, row, alignRight, fill, height, width, rgb255, spacing, px, centerY, padding, minimum, maximum, centerX, fillPortion, alignTop, alignBottom)
 import Element.Background as Background
 import Element.Font as Font
 import Element.Border as Border
+import Ports exposing (audioPause, audioPlay)
 
 
 -- MAIN
@@ -77,21 +78,21 @@ update msg model =
         ClickedPlay turntable ->
             if turntable == TurntableLeft then
                 ( { model | turntableLeftStatus = Playing }
-                , Cmd.none
+                , Ports.audioPlay { player = "player-left", time = 1.0 }
                 )
             else
                 ( { model | turntableRightStatus = Playing }
-                , Cmd.none
+                , Ports.audioPlay { player = "player-right", time = 1.0 }
                 )
 
         ClickedStop turntable ->
             if turntable == TurntableLeft then
                 ( { model | turntableLeftStatus = Stopped }
-                , Cmd.none
+                , Ports.audioPause { player = "player-left", time = 1.0 }
                 )
             else
                 ( { model | turntableRightStatus = Stopped }
-                , Cmd.none
+                , Ports.audioPause { player = "player-right", time = 1.0 }
                 )
 
 
@@ -117,7 +118,7 @@ mixerContainer model =
         mobile =
             True
     in
-        el
+        row
             [ centerX
             , centerY
             , if mobile then
@@ -126,7 +127,36 @@ mixerContainer model =
                 (width (fill |> minimum 410 |> maximum 414))
             , height fill
             ]
-            (mixer model)
+            [ mixer model
+            , html
+                (audio
+                    [ src (s3 ++ "mp3/en-orbita-fania-all-stars.mp3")
+                    , id "player-left"
+                    , type_ "audio/ogg"
+                    , autoplay False
+                    , controls False
+                      {- , onItemLoad SetDuration
+                         , onTimeUpdate TimeUpdate
+                         , onEnded EndPlayer
+                      -}
+                    ]
+                    []
+                )
+            , html
+                (audio
+                    [ src (s3 ++ "mp3/sly-herbie-hancock.mp3")
+                    , id "player-right"
+                    , type_ "audio/ogg"
+                    , autoplay False
+                    , controls False
+                      {- , onItemLoad SetDuration
+                         , onTimeUpdate TimeUpdate
+                         , onEnded EndPlayer
+                      -}
+                    ]
+                    []
+                )
+            ]
 
 
 mixer : Model -> Element Msg

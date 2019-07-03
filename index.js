@@ -1,5 +1,13 @@
-import { Elm } from './src/Main.elm' 
+import { Elm } from './src/Main.elm'
 
-Elm.Main.init({
+var app = Elm.Main.init({
   node: document.getElementById('app')
+});
+
+app.ports.audioPause.subscribe(function({player: player, time: time}) {
+	document.getElementById(player).pause();
+});
+
+app.ports.audioPlay.subscribe(function({player: player, time: time}) {
+	document.getElementById(player).play();
 });
