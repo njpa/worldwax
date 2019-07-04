@@ -130,7 +130,7 @@ mixerContainer model =
             [ mixer model
             , html
                 (audio
-                    [ src (s3 ++ "mp3/en-orbita-fania-all-stars.mp3")
+                    [ src (s3 ++ "mp3/en-orbita-fania-all-stars-128.m4a")
                     , id "player-left"
                     , type_ "audio/ogg"
                     , autoplay False
@@ -144,7 +144,7 @@ mixerContainer model =
                 )
             , html
                 (audio
-                    [ src (s3 ++ "mp3/sly-herbie-hancock.mp3")
+                    [ src (s3 ++ "mp3/sly-herbie-hancock-128.m4a")
                     , id "player-right"
                     , type_ "audio/ogg"
                     , autoplay False
